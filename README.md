@@ -7,8 +7,8 @@ Setup Requirements
 
 Android studio
 
-1) Install Android SDK in Android studio and add below paths
-SDK - API 34
+1) Install Android SDK in Android studio and add below paths<br>
+Choose SDK-API 34 (in Android studio)
 <img src="https://github.com/CPAD2023/CPAD2023SecBTeam05/assets/51479725/1552f536-11c7-4b4a-b99a-34a63a88c109" alt="Image 1" width="300"/>
 <br><br>
 <img src="https://github.com/CPAD2023/CPAD2023SecBTeam05/assets/51479725/e8ccbf00-2fd7-4861-926e-ee38fd91785b" alt="Image 2" width="300"/>
