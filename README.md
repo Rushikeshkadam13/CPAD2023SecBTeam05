@@ -3,7 +3,7 @@ CPAD2023SecBTeam05
 Expense Splitter (Android/Web)
 
 
-Setup Requirements
+Setup Requirements<br>
 install gradle 8.0.2
 Android studio
 
