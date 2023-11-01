@@ -4,7 +4,7 @@ Expense Splitter (Android/Web)
 
 
 Setup Requirements
-
+install gradle 8.0.2
 Android studio
 
 1) Install Android SDK in Android studio and add below paths<br>
