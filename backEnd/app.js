@@ -8,8 +8,8 @@ const app = express();
 // const MyModel = mongoose.model("Test_Paresh", new Schema({ name: String }));
 // // Works
 // MyModel.findOne();
-const expenseRouter = require("./routes/expenses.js");
-app.use("/expenses", expenseRouter);
+const spiltterRouter = require("./routes/routes.js");
+app.use("/splitter", spiltterRouter);
 // async fetchExpense(myColl) {
 //   return await myColl.find({});
 // };

@@ -1,12 +1,60 @@
 const express = require("express");
 const router = express.Router();
+const userModel = require("../models/Users");
+const groupModel = require("../models/Group");
 const expenseController = require("../controllers/expenseController");
 const expenseModel = require("../models/Expense");
 router.use(express.json());
 
 // // Create a new expense
 // router.post("/", expenseController.createExpense);
+router.post("/addUser", async (req, res) => {
+  const User = new userModel({
+    username: req.body.username,
+    uid: req.body.uid,
+  });
+  try {
+    const user = User.save();
+    res.json(user);
+  } catch (err) {
+    res.send("Error" + err);
+  }
+});
+// Get a list of all users
+router.get("/getUser", async (req, res) => {
+  try {
+    const user = await userModel.find();
+    res.json(user);
+  } catch (err) {
+    res.send("Error" + err);
+  }
+});
 
+router.post("/createGrp", async (req, res) => {
+  const Group = new groupModel({
+    groupTitle: req.body.groupTitle,
+    groupDescription: req.body.groupDescription,
+    userBalances: req.body.userBalances,
+    paymentGraph: req.body.paymentGraph,
+    expenses: req.body.expenses,
+    users: req.body.users,
+  });
+  try {
+    const group = Group.save();
+    res.json(group);
+  } catch (err) {
+    res.send("Error" + err);
+  }
+});
+// Get a list of all users
+router.get("/getGrp", async (req, res) => {
+  try {
+    const group = await groupModel.find();
+    res.json(group);
+  } catch (err) {
+    res.send("Error" + err);
+  }
+});
 // Get a list of all expenses
 router.get("/", async (req, res) => {
   try {
@@ -52,12 +100,12 @@ router.delete("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const Expense = new Expense({
+  const Expense = new expenseModel({
     title: req.body.title,
     description: req.body.description,
     amount: req.body.amount,
-    payer: req.body.payer,
-    participants: req.body.participants,
+    uid: req.body.uid,
+    userBalances: req.body.userBalances,
     date: req.body.date,
   });
   try {

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-// Define the schema for the Expense model
+//schema for the Expense model
 const expenseSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -13,12 +13,23 @@ const expenseSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  payer: {
-    type: String, // You can customize the type based on your user model
+  uid: {
+    type: String,
     required: true,
   },
-  participants: {
-    type: [String], // You can customize the type based on your user model
+  userBalances: {
+    type: [
+      {
+        uid: {
+          type: String,
+          required: true,
+        },
+        balance: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
     required: true,
   },
   date: {

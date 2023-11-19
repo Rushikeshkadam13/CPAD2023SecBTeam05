@@ -7,16 +7,11 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  email: {
+  uid: {
     type: String,
     required: true,
     unique: true,
   },
-  password: {
-    type: String,
-    required: true,
-  },
-  // Add more fields as needed, such as profile information, roles, etc.
 });
 
 // Create the User model
