@@ -29,13 +29,9 @@ const expenseSchema = new mongoose.Schema({
           required: true,
         },
       },
-    ],
-    required: true,
+    ]
   },
-  date: {
-    type: Date,
-    default: Date.now,
-  },
+ 
 });
 
 // Create the Expense model

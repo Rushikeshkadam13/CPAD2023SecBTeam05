@@ -12,6 +12,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  groups: {
+    type: [String]
+  },
 });
 
 // Create the User model

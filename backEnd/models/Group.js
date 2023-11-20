@@ -21,8 +21,7 @@ const groupSchema = new mongoose.Schema({
           required: true,
         },
       },
-    ],
-    required: true,
+    ]
   },
   paymentGraph: {
     type: [
@@ -40,12 +39,10 @@ const groupSchema = new mongoose.Schema({
           required: true,
         },
       },
-    ],
-    required: true,
+    ]
   },
   expenses: {
-    type: [String],
-    required: true,
+    type: [String]
   },
   users: {
     type: [String],

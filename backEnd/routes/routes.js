@@ -4,11 +4,13 @@ const userModel = require("../models/Users");
 const groupModel = require("../models/Group");
 const expenseController = require("../controllers/expenseController");
 const expenseModel = require("../models/Expense");
+const expenseCalculator = require("../expenseCalculations/expenseCalculator");
+const dbOperations = require("../expenseCalculations/databaseOperations");
 router.use(express.json());
 
 // // Create a new expense
 // router.post("/", expenseController.createExpense);
-router.post("/addUser", async (req, res) => {
+router.post("/adduser", async (req, res) => {
   const User = new userModel({
     username: req.body.username,
     uid: req.body.uid,
@@ -21,7 +23,7 @@ router.post("/addUser", async (req, res) => {
   }
 });
 // Get a list of all users
-router.get("/getUser", async (req, res) => {
+router.get("/getusers", async (req, res) => {
   try {
     const user = await userModel.find();
     res.json(user);
@@ -30,7 +32,7 @@ router.get("/getUser", async (req, res) => {
   }
 });
 
-router.post("/createGrp", async (req, res) => {
+router.post("/creategroup", async (req, res) => {
   const Group = new groupModel({
     groupTitle: req.body.groupTitle,
     groupDescription: req.body.groupDescription,
@@ -40,14 +42,16 @@ router.post("/createGrp", async (req, res) => {
     users: req.body.users,
   });
   try {
-    const group = Group.save();
+    const group = await Group.save();
+    const gid = group._id;
+    dbOperations.addGroupUnderUser(req.body.users, gid);
     res.json(group);
   } catch (err) {
     res.send("Error" + err);
   }
 });
-// Get a list of all users
-router.get("/getGrp", async (req, res) => {
+
+router.get("/getgroups", async (req, res) => {
   try {
     const group = await groupModel.find();
     res.json(group);
@@ -55,8 +59,8 @@ router.get("/getGrp", async (req, res) => {
     res.send("Error" + err);
   }
 });
-// Get a list of all expenses
-router.get("/", async (req, res) => {
+
+router.get("/getepenses", async (req, res) => {
   try {
     const expense1 = await expenseModel.find();
     res.json(expense1);
@@ -65,64 +69,24 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
-  try {
-    const expense = await expenseModel.findById(req.params.id);
-    if (expense == null) {
-      res.send("This Expense is not exist");
-    } else {
-      res.json(expense);
-    }
-  } catch (err) {
-    res.send("Error" + err);
-  }
-});
-
-router.patch("/:id", async (req, res) => {
-  try {
-    const expense = await expenseModel.findById(req.params.id);
-    expense.amount = req.body.amount;
-    const a1 = await expense.save();
-    res.json(a1);
-  } catch (err) {
-    res.send("Error" + err);
-  }
-});
-
-router.delete("/:id", async (req, res) => {
-  try {
-    const expense = await expenseModel.findById(req.params.id);
-    const a1 = await expense.deleteOne();
-    res.json(a1);
-  } catch (err) {
-    res.send("Error" + err);
-  }
-});
-
-router.post("/", async (req, res) => {
+router.post("/addexpense", async (req, res) => {
   const Expense = new expenseModel({
     title: req.body.title,
     description: req.body.description,
     amount: req.body.amount,
-    uid: req.body.uid,
-    userBalances: req.body.userBalances,
-    date: req.body.date,
+    uid: req.body.uid
   });
   try {
-    const expense = Expense.save();
+    const expense = await Expense.save();
+    const expenseId = expense._id;
+    dbOperations.addExpenseToGroup(req.body.gid, expenseId);
     res.json(expense);
+
   } catch (err) {
     res.send("Error" + err);
   }
 });
 
-// Get a single expense by ID
-// router.get("/:id", expenseController.getExpenseById);
 
-// // Update an existing expense by ID
-// router.put("/:id", expenseController.updateExpense);
-
-// // Delete an expense by ID
-// router.delete("/:id", expenseController.deleteExpense);
 
 module.exports = router;
