@@ -11,6 +11,10 @@ groups.push(new Group("g2", "SAP", [users[0], users[2]], ""));
 
 var expenses = [];
 
+function addExpenseToGroup() {
+    
+}
+
 function getUser(uid) {
 	for (const user of users) {
 		if (user.uid === uid) {
@@ -131,17 +135,12 @@ function makePaymentGraph(gid) {
 }
 
 
-// insertUserNode(new Person('Alice', 25),lenders);
-// insertUserNode(new Person('Bob', 30),lenders);
-// insertUserNode(new Person('Charlie', 20),lenders);
-
-// console.log(popTopUser(lenders));
-// console.log(lenders);
 
 
-console.log(addExpense("g1", 2, 90));
-console.log(addExpense("g1", 1, 120));
+// console.log(addExpense("g1", 2, 90));
+// console.log(addExpense("g1", 1, 120));
 
-console.log(makePaymentGraph("g1"))
-console.log(getGroup("g1"))
+// console.log(makePaymentGraph("g1"))
+// console.log(getGroup("g1"))
+
 // console.log(generateUniqueId());

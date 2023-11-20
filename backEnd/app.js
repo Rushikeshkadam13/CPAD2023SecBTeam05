@@ -1,15 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const configiration = require("../config.js");
+// const configiration = require("../config.js");
 
 const mongoose = require("mongoose");
 const spiltterRouter = require("./routes/routes.js");
 app.use("/splitter", spiltterRouter);
-const pass = configiration.password;
+// const pass = configiration.password;
 const uri =
   "mongodb+srv://Bits-Expense-Splitter:" +
-  pass +
+  "CGX5x2wbqA3tcUN1" +
   "@cluster0.z70uixj.mongodb.net/ExpenseSplitter?retryWrites=true&w=majority";
 
 mongoose
