@@ -1,26 +1,26 @@
-// app.js
-
 const express = require("express");
 const cors = require("cors");
-const mongoose = require("./config/database"); // Import the database configuration
 const app = express();
-// const Schema = mongoose.Schema;
-// const MyModel = mongoose.model("Test_Paresh", new Schema({ name: String }));
-// // Works
-// MyModel.findOne();
+const configiration = require("../config.js");
+
+const mongoose = require("mongoose");
 const spiltterRouter = require("./routes/routes.js");
 app.use("/splitter", spiltterRouter);
-// async fetchExpense(myColl) {
-//   return await myColl.find({});
-// };
+const pass = configiration.password;
+const uri =
+  "mongodb+srv://Bits-Expense-Splitter:" +
+  pass +
+  "@cluster0.z70uixj.mongodb.net/ExpenseSplitter?retryWrites=true&w=majority";
 
-app.use(cors());
-app.use(express.json());
-// ... Other application setup and middleware
-
-// Start your Express server
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+mongoose
+  .connect(uri, {
+    useNewUrlParser: true,
+    useunifiedTopology: true,
+  })
+  .then(() => {
+    console.log("db Connected succesfully..");
+    app.listen(3000, () => {
+      console.log(`Server is running on port 3000`);
+    });
+  })
+  .catch((err) => console.log(err));
