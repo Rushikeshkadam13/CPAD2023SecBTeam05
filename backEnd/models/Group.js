@@ -26,15 +26,15 @@ const groupSchema = new mongoose.Schema({
   paymentGraph: {
     type: [
       {
-        sender: {
+        from: {
           type: String,
           required: true,
         },
-        receiver: {
+        to: {
           type: String,
           required: true,
         },
-        amount: {
+        balance: {
           type: Number,
           required: true,
         },

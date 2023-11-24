@@ -8,8 +8,7 @@ const expenseCalculator = require("../expenseCalculations/expenseCalculator");
 const dbOperations = require("../expenseCalculations/databaseOperations");
 router.use(express.json());
 
-// // Create a new expense
-// router.post("/", expenseController.createExpense);
+
 router.post("/adduser", async (req, res) => {
   const User = new userModel({
     username: req.body.username,
@@ -22,7 +21,7 @@ router.post("/adduser", async (req, res) => {
     res.send("Error" + err);
   }
 });
-// Get a list of all users
+
 router.get("/getusers", async (req, res) => {
   try {
     const user = await userModel.find();
@@ -53,17 +52,19 @@ router.post("/creategroup", async (req, res) => {
 
 router.get("/getgroups", async (req, res) => {
   try {
-    const group = await groupModel.find();
-    res.json(group);
+    console.log("Hi")
+    console.log(req.query);
+    const groups = await dbOperations.getGroups(req.query.uid);
+    res.json(groups);
   } catch (err) {
     res.send("Error" + err);
   }
 });
 
-router.get("/getepenses", async (req, res) => {
+router.get("/getexpenses", async (req, res) => {
   try {
-    const expense1 = await expenseModel.find();
-    res.json(expense1);
+    const expenses = await dbOperations.getExpenses(req.query.gid);
+    res.json(expenses);
   } catch (err) {
     res.send("Error" + err);
   }
@@ -79,7 +80,7 @@ router.post("/addexpense", async (req, res) => {
   try {
     const expense = await Expense.save();
     const expenseId = expense._id;
-    dbOperations.addExpenseToGroup(req.body.gid, expenseId);
+    dbOperations.addExpenseToGroup(req.body.gid, expenseId, Expense.uid, Expense.amount);
     res.json(expense);
 
   } catch (err) {
