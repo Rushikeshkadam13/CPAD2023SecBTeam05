@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-// const configiration = require("../config.js");
+const helmet = require("helmet");
 
 const mongoose = require("mongoose");
 const spiltterRouter = require("./routes/routes.js");
@@ -12,6 +12,11 @@ const uri =
   process.env.PASSWORD +
   "@cluster0.z70uixj.mongodb.net/ExpenseSplitter?retryWrites=true&w=majority";
 
+app.use(helmet());
+
+app.get("/", (req, res) => {
+  res.send("Welcome to SPlitExpences");
+});
 
 mongoose
   .connect(uri, {
