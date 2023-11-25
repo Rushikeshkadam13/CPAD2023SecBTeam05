@@ -12,7 +12,6 @@ const uri =
   process.env.PASSWORD +
   "@cluster0.z70uixj.mongodb.net/ExpenseSplitter?retryWrites=true&w=majority";
 
-  console.log(process.env.PASSWORD)
 
 mongoose
   .connect(uri, {
