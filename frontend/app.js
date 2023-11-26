@@ -1,32 +1,19 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import ProfileScreen from './screens/groupsScreen';
+import { createStackNavigator } from '@react-navigation/stack';
+import MyScreen from './screens/homeScreen'; // Import your screen
 
+const Stack = createStackNavigator();
 
-const Tab = createBottomTabNavigator();
-
-export default function App() {
+const App = () => {
   return (
-    // <View style={styles.container}>
-    //   <Text>Openrohit to lkjhgft working on your app!</Text>
-    //   <StatusBar style="auto" />
-    // </View>
     <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Navigator screenOptions={{headerShown:false}}>
+        <Stack.Screen name="SplitExpenses" component={MyScreen} />
         {/* Add more screens as needed */}
-      </Tab.Navigator>
+      </Stack.Navigator>
     </NavigationContainer>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
