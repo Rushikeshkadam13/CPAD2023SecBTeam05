@@ -10,10 +10,14 @@ router.use(express.json());
 router.post("/adduser", async (req, res) => {
   const User = new userModel({
     username: req.body.username,
+    password: req.body.password,
     uid: req.body.uid,
   });
   try {
-    const user = User.save();
+    console.log("user");
+    console.log(User)
+    const user = await User.save();
+    // console.log("asa                   ..........................................", user);
     res.json(user);
   } catch (err) {
     res.send("Error" + err);
@@ -54,6 +58,34 @@ router.get("/getgroups", async (req, res) => {
     console.log(req.query);
     const groups = await dbOperations.getGroups(req.query.uid);
     res.json(groups);
+  } catch (err) {
+    res.send("Error" + err);
+  }
+});
+
+router.post("/login", async (req, res) => {
+  try {
+    const result = {
+      authenticated: true,
+      username: "username"
+    };
+    var userinp = req.body.username;
+    var p = req.body.password;
+    console.log(userinp, p, "...........................")
+    var isUser = await userModel.findOne({ password: p, username: userinp })
+    console.log("is", isUser, await userModel.findOne({ username: userinp }))
+    if (isUser) {
+      console.log(isUser)
+      result.username = isUser.username
+      result.authenticated = true;
+      res.send(result)
+
+      console.log("isUser", result)
+    } else {
+      result.authenticated = false;
+      res.send(result)
+    }
+    //
   } catch (err) {
     res.send("Error" + err);
   }

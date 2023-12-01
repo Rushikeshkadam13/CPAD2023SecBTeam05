@@ -20,7 +20,7 @@ const CreateGroupScreen = ({ route, navigation }) => {
   const [description, setDescription] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
 
-  const api = "https://expense-splitter-service.onrender.com/splitter/getusers";
+  const api = "http://localhost:3000/splitter/getusers";
   const [users, setUsers] = useState([]);
   useEffect(() => {
     getusers();
@@ -71,7 +71,7 @@ const CreateGroupScreen = ({ route, navigation }) => {
         users: data.selectedUsers,
       };
       const response = await fetch(
-        "https://expense-splitter-service.onrender.com/splitter/creategroup",
+        "http://localhost:3000/splitter/creategroup",
         {
           method: "POST",
           headers: {

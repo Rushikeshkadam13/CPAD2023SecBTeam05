@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -7,19 +7,72 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-
+import UserContext from '../UserLogin/UserContext'
 const GroupsScreen = ({ navigation }) => {
   const [groups, setGroups] = useState([]);
+  const [group2, setGroup2] = useState([]);
+  const [trxnGraph, setTransactions] = useState([]);
   const [expenses, setExpenses] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState(null);
 
-  const showGroupDetails = (group) => {
-    console.log(group);
-    setSelectedGroup(group);
-    getExpenses(group._id);
+  const showGroupDetails = async (group) => {
+    // console.log(group);
+    await updateGroup(group._id);
+    console.log("jhgfdgfgfhjhjhgfh");
+    setTransactions(group2.paymentGraph);
+    console.log("trxn", trxnGraph, group2)
+    console.log("got exp")
+    console.log(group._id);
+    UserContext.gid = group._id;
+
+    await updateGroup(group._id);
+
+    await getExpenses(group._id);
+
+    await updateGroup(group._id);
+    navigation.navigate("ViewGroupScreen", {
+      // onSaveSuccess: (data) => {
+      //   console.log("Save operation in CreateGroupScreen was successful");
+      //   getGroups();
+      // },
+      trxnGraph: UserContext.paymentGraph,
+      expenses: UserContext.expenses,
+      selectedGroup: UserContext.gid
+    })
+
   };
 
+  const updateGroup = async (gid) => {
+    await getGroups();
+    for (const grp of groups) {
+      if (grp._id === gid) {
+        console.log("group", grp)
+        UserContext.paymentGraph = grp.paymentGraph;
+        return grp;
+      }
+    }
+    console.log("error .....................  ")
+  }
+
+  const getExpenses = async (gid) => {
+    const api =
+      "http://localhost:3000/splitter/getexpenses";
+    await fetch(api + "?gid=" + UserContext.gid)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("expesnse", data)
+        data.reverse();
+        UserContext.expenses = data;
+        setExpenses(data);
+      })
+      .catch((error) => {
+        console.error("cannot get expenses, Error during GET request:", error);
+      });
+  };
   const hideGroupDetails = () => {
     setSelectedGroup(null);
   };
@@ -33,62 +86,13 @@ const GroupsScreen = ({ navigation }) => {
     });
   };
 
-  const handleSettleUp = async (data) => {
-    console.log("in handlesettel");
-    try {
-      // Assuming you have an API endpoint to save group data
-      var formattedData = {
-        expenseTitle: data.title,
-        expenseDescription: data.description,
-        amount: data.amount,
-        uid: data.uid,
-      };
-      const response = await fetch(
-        "https://expense-splitter-service.onrender.com/splitter/settletransaction",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formattedData),
-        }
-      );
-      console.log(response);
-      if (response.ok) {
-        console.log("Expense settle up successfully!");
-        // Toast.show({
-        //   type: "success",
-        //   text1: "Expense saved",
-        //   text2: "Expense data saved successfully!",
-        //   visibilityTime: 15000,
-        // });
-        navigation.navigate("GroupsScreen");
-      } else {
-        console.error("Failed to settle up", response.status);
-        route.params.onSaveSuccess(false);
-        navigation.navigate("GroupsScreen");
-      }
-    } catch (error) {
-      console.error("Error while settle up:", error.message);
-    }
-  };
 
-  const addExpense = (group) => {
-    navigation.navigate("AddExpenseScreen", {
-      onSaveSuccess: (data) => {
-        console.log("Save operation in AddExpenseScreen was successful");
-        console.log("data", data);
-        getExpenses(data.uid);
-      },
-    });
-  };
-
-  const getGroups = () => {
+  const getGroups = async () => {
     const api =
-      "https://expense-splitter-service.onrender.com/splitter/getgroups";
-    const uid = "1@gmail.com";
+      "http://localhost:3000/splitter/getgroups";
+    const uid = UserContext.userid;
 
-    fetch(api + "?uid=" + uid)
+    await fetch(api + "?uid=" + uid)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -96,108 +100,32 @@ const GroupsScreen = ({ navigation }) => {
         return response.json();
       })
       .then((data) => {
+        console.log("got froups", data)
         data.reverse();
         setGroups(data);
+        console.log("asdsadsad", groups)
       })
       .catch((error) => {
         console.error("Error during GET request:", error);
       });
   };
 
-  const getExpenses = (gid) => {
-    const api =
-      "https://expense-splitter-service.onrender.com/splitter/getexpenses";
-    console.log(api);
-    fetch(api + "?gid=" + gid)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        data.reverse();
-        setExpenses(data);
-        console.log("asdsad", data);
-      })
-      .catch((error) => {
-        console.error("Error during GET request:", error);
-      });
-  };
 
-  useEffect(() => {
-    getGroups();
+
+  useEffect(async () => {
+    console.log("user", UserContext)
+    await getGroups();
   }, []);
 
   return (
-    <View style={styles.page}>
-      {selectedGroup ? (
-        <View style={styles.groupDetailsContainer}>
-          <TouchableOpacity
-            style={{ marginTop: 50, marginLeft: 0 }}
-            onPress={hideGroupDetails}
-          >
-            <MaterialIcons
-              style={{ marginTop: 40 }}
-              name="close"
-              size={24}
-              color="white"
-            />
-          </TouchableOpacity>
-
-          <Text style={styles.title}>
-            Expenses under this group {expenses.length}
-          </Text>
-          <View>
-            <FlatList
-              data={expenses}
-              keyExtractor={(item) => item._id}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.groupContainer}>
-                  <View style={styles.horizontalSection}>
-                    <View style={styles.verticalSection}>
-                      <Text style={styles.groupTitle}>{item.title}</Text>
-                    </View>
-
-                    <View style={styles.verticalSection}>
-                      <Text style={styles.groupDescription}>
-                        {item.uid} Paid {item.amount} Rs.
-                      </Text>
-                    </View>
-                    <View>
-                      <TouchableOpacity
-                        style={styles.settleUpButton}
-                        onPress={handleSettleUp} // Implement the handleSettleUp function
-                      >
-                        <MaterialIcons
-                          name="done"
-                          size={24}
-                          color="white"
-                          fontWeight="bold"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.addExpenseButton}
-            onPress={addExpense}
-          >
-            <Text style={styles.buttonText}>Add Expense</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <>
+    <View style={styles.page}>      
           <Text style={styles.title}>
             You are included in {groups.length} Groups
           </Text>
           <View style={styles.container}>
             <FlatList
               data={groups}
-              keyExtractor={(item) => item._id}
+          keyExtractor={(item) => item.groupTitle}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.groupContainer}
@@ -217,7 +145,7 @@ const GroupsScreen = ({ navigation }) => {
 
                   <View style={styles.verticalSection}>
                     {item.userBalances.map((userBalance) => {
-                      if (userBalance.uid === "1@gmail.com") {
+                      if (userBalance.uid === UserContext.userid) {
                         const balance = userBalance.balance;
                         let balanceText = "";
 
@@ -247,9 +175,7 @@ const GroupsScreen = ({ navigation }) => {
           </View>
           <TouchableOpacity style={styles.refreshButton} onPress={createGroup}>
             <Text style={styles.buttonText}>Create Group</Text>
-          </TouchableOpacity>
-        </>
-      )}
+      </TouchableOpacity>
     </View>
   );
 };
@@ -270,8 +196,7 @@ const styles = StyleSheet.create({
   },
   horizontalSection: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 4,
+    justifyContent: "space-between"
   },
   verticalSection: {
     flex: 1,
@@ -279,10 +204,10 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "white",
+    padding: 20,
     fontSize: 20,
     fontWeight: "bold",
-    paddingTop: 10,
-    marginBottom: 20,
+    // marginBottom: 10,
   },
   scrollContainer: {
     flex: 1,
@@ -356,10 +281,26 @@ const styles = StyleSheet.create({
     shadowRadius: 4.84,
     elevation: 6,
   },
+  backButton: {
+    position: "absolute",
+    top: 10,
+    left: 15,
+    backgroundColor: "hsla(111, 0%, 65%, 1)",
+    padding: 10,
+    borderRadius: 7,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4.84,
+    elevation: 6,
+  },
   refreshButton: {
     position: "absolute",
-    bottom: 25,
-    right: 25,
+    bottom: 15,
+    right: 15,
     backgroundColor: "hsla(111, 0%, 65%, 1)",
     padding: 10,
     borderRadius: 7,

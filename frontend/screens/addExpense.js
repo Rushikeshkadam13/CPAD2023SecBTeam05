@@ -12,38 +12,15 @@ import {
   Button,
   Platform,
 } from "react-native";
-
+import UserContext from '../UserLogin/UserContext'
 const { StatusBarManager } = NativeModules;
 
 const AddExpenseScreen = ({ route, navigation }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
+  const { uid, gid } = route.params;
 
-  // const api = "https://expense-splitter-service.onrender.com/splitter/getusers";
-  // const [users, setUsers] = useState([]);
-  // useEffect(() => {
-  //   getusers();
-  // }, []);
-  // const getusers = () => {
-  //   fetch(api)
-  //     .then((response) => {
-  //       if (!response.ok) {
-  //         throw new Error("Network response was not ok");
-  //       }
-  //       return response.json();
-  //     })
-  //     .then((data) => {
-  //       // console.log(data)
-  //       setUsers(data);
-  //       data.reverse();
-
-  //       // setGroups(data); // Set the groups in the state
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error during GET request:", error);
-  //     });
-  // };
 
   const handleSave = () => {
     const expenseData = {
@@ -56,14 +33,17 @@ const AddExpenseScreen = ({ route, navigation }) => {
 
   const saveExpenseDataToBackend = async (data) => {
     try {
+      console.log("grp", gid)
       // Assuming you have an API endpoint to save group data
       var formattedData = {
-        expenseTitle: data.title,
-        expenseDescription: data.description,
+        title: data.title,
+        description: data.description,
         amount: data.amount,
+        uid: uid,
+        gid: UserContext.gid
       };
       const response = await fetch(
-        "https://expense-splitter-service.onrender.com/splitter/addexpense",
+        "http://localhost:3000/splitter/addexpense",
         {
           method: "POST",
           headers: {
@@ -74,18 +54,12 @@ const AddExpenseScreen = ({ route, navigation }) => {
       );
       console.log(response);
       if (response.ok) {
-        console.log("Expense data saved successfully!");
-        route.params.onSaveSuccess(true);
-        Toast.show({
-          type: "success",
-          text1: "Expense saved",
-          text2: "Expense data saved successfully!",
-          visibilityTime: 8000,
-        });
+        console.log("Expense data saved vg successfully!");
+        // route.params.onSaveSuccess(true);
         navigation.navigate("GroupsScreen");
       } else {
         console.error("Failed to save expense data:", response.status);
-        route.params.onSaveSuccess(false);
+        // route.params.onSaveSuccess(false);
         navigation.navigate("GroupsScreen");
       }
     } catch (error) {
@@ -126,7 +100,7 @@ const AddExpenseScreen = ({ route, navigation }) => {
         </View>
       </View>
       <TouchableOpacity style={styles.refreshButton} onPress={handleSave}>
-        <Text style={styles.buttonText}>Add Expense</Text>
+        <Text style={styles.buttonText}>Save Expense</Text>
       </TouchableOpacity>
       {/* Additional content and functionality can be added as needed */}
     </SafeAreaView>
