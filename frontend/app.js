@@ -7,6 +7,14 @@ import AddExpenseScreen from "./screens/addExpense";
 import GroupView from "./screens/groupView";
 import LoginPage from "./screens/loginScreen";
 
+import { LogBox } from 'react-native';
+
+// Ignore specific warnings
+LogBox.ignoreAllLogs();
+
+console.disableYellowBox = true;
+
+console.error = () => { };
 const Stack = createStackNavigator();
 
 const App = () => {
