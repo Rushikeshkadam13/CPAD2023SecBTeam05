@@ -7,7 +7,7 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
-import UserContext from '../UserLogin/UserContext'
+import UserContext from "../UserLogin/UserContext";
 const GroupsScreen = ({ navigation }) => {
   const [groups, setGroups] = useState([]);
   const [group2, setGroup2] = useState([]);
@@ -19,8 +19,8 @@ const GroupsScreen = ({ navigation }) => {
     await updateGroup(group._id);
     console.log("jhgfdgfgfhjhjhgfh");
     setTransactions(group2.paymentGraph);
-    console.log("trxn", trxnGraph, group2)
-    console.log("got exp")
+    console.log("trxn", trxnGraph, group2);
+    console.log("got exp");
     console.log(group._id);
     UserContext.gid = group._id;
 
@@ -36,26 +36,25 @@ const GroupsScreen = ({ navigation }) => {
       // },
       trxnGraph: UserContext.paymentGraph,
       expenses: UserContext.expenses,
-      selectedGroup: UserContext.gid
-    })
-
+      selectedGroup: UserContext.gid,
+    });
   };
 
   const updateGroup = async (gid) => {
     await getGroups();
     for (const grp of groups) {
       if (grp._id === gid) {
-        console.log("group", grp)
+        console.log("group", grp);
         UserContext.paymentGraph = grp.paymentGraph;
         return grp;
       }
     }
-    console.log("error .....................  ")
-  }
+    console.log("error .....................  ");
+  };
 
   const getExpenses = async (gid) => {
     const api =
-      "http://localhost:3000/splitter/getexpenses";
+      "https://expense-splitter-service.onrender.com/splitter/getexpenses";
     await fetch(api + "?gid=" + UserContext.gid)
       .then((response) => {
         if (!response.ok) {
@@ -64,7 +63,7 @@ const GroupsScreen = ({ navigation }) => {
         return response.json();
       })
       .then((data) => {
-        console.log("expesnse", data)
+        console.log("expesnse", data);
         data.reverse();
         UserContext.expenses = data;
         setExpenses(data);
@@ -86,10 +85,9 @@ const GroupsScreen = ({ navigation }) => {
     });
   };
 
-
   const getGroups = async () => {
     const api =
-      "http://localhost:3000/splitter/getgroups";
+      "https://expense-splitter-service.onrender.com/splitter/getgroups";
     const uid = UserContext.userid;
 
     await fetch(api + "?uid=" + uid)
@@ -100,81 +98,76 @@ const GroupsScreen = ({ navigation }) => {
         return response.json();
       })
       .then((data) => {
-        console.log("got froups", data)
+        console.log("got froups", data);
         data.reverse();
         setGroups(data);
-        console.log("asdsadsad", groups)
+        console.log("asdsadsad", groups);
       })
       .catch((error) => {
         console.error("Error during GET request:", error);
       });
   };
 
-
-
   useEffect(async () => {
-    console.log("user", UserContext)
+    console.log("user", UserContext);
     await getGroups();
   }, []);
 
   return (
-    <View style={styles.page}>      
-          <Text style={styles.title}>
-            You are included in {groups.length} Groups
-          </Text>
-          <View style={styles.container}>
-            <FlatList
-              data={groups}
+    <View style={styles.page}>
+      <Text style={styles.title}>
+        You are included in {groups.length} Groups
+      </Text>
+      <View style={styles.container}>
+        <FlatList
+          data={groups}
           keyExtractor={(item) => item.groupTitle}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.groupContainer}
-                  onPress={() => showGroupDetails(item)}
-                >
-                  <View style={styles.horizontalSection}>
-                    <View style={styles.verticalSection}>
-                      <Text style={styles.groupTitle}>{item.groupTitle}</Text>
-                    </View>
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.groupContainer}
+              onPress={() => showGroupDetails(item)}
+            >
+              <View style={styles.horizontalSection}>
+                <View style={styles.verticalSection}>
+                  <Text style={styles.groupTitle}>{item.groupTitle}</Text>
+                </View>
 
-                    <View style={styles.verticalSection}>
-                      <Text style={styles.groupDescription}>
-                        {item.groupDescription}
+                <View style={styles.verticalSection}>
+                  <Text style={styles.groupDescription}>
+                    {item.groupDescription}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.verticalSection}>
+                {item.userBalances.map((userBalance) => {
+                  if (userBalance.uid === UserContext.userid) {
+                    const balance = userBalance.balance;
+                    let balanceText = "";
+
+                    if (balance === 0) {
+                      balanceText = "You are settled up.";
+                    } else if (balance > 0) {
+                      balanceText = `You are owed ${balance} Rs.`;
+                    } else {
+                      balanceText = `You owe ${Math.abs(balance)} Rs.`;
+                    }
+
+                    return (
+                      <Text key={userBalance.uid} style={styles.userBalance}>
+                        {balanceText}
                       </Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.verticalSection}>
-                    {item.userBalances.map((userBalance) => {
-                      if (userBalance.uid === UserContext.userid) {
-                        const balance = userBalance.balance;
-                        let balanceText = "";
-
-                        if (balance === 0) {
-                          balanceText = "You are settled up.";
-                        } else if (balance > 0) {
-                          balanceText = `You are owed ${balance} Rs.`;
-                        } else {
-                          balanceText = `You owe ${Math.abs(balance)} Rs.`;
-                        }
-
-                        return (
-                          <Text
-                            key={userBalance.uid}
-                            style={styles.userBalance}
-                          >
-                            {balanceText}
-                          </Text>
-                        );
-                      }
-                      return null;
-                    })}
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-          <TouchableOpacity style={styles.refreshButton} onPress={createGroup}>
-            <Text style={styles.buttonText}>Create Group</Text>
+                    );
+                  }
+                  return null;
+                })}
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+      <TouchableOpacity style={styles.refreshButton} onPress={createGroup}>
+        <Text style={styles.buttonText}>Create Group</Text>
       </TouchableOpacity>
     </View>
   );
@@ -196,7 +189,7 @@ const styles = StyleSheet.create({
   },
   horizontalSection: {
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   verticalSection: {
     flex: 1,
