@@ -7,7 +7,10 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
+
+import { MaterialIcons } from "@expo/vector-icons";
 import UserContext from "../UserLogin/UserContext";
+
 const GroupsScreen = ({ navigation }) => {
   const [groups, setGroups] = useState([]);
   const [group2, setGroup2] = useState([]);
@@ -101,13 +104,17 @@ const GroupsScreen = ({ navigation }) => {
         console.log("got froups", data);
         data.reverse();
         setGroups(data);
+        UserContext.groups = data;
         console.log("asdsadsad", groups);
       })
       .catch((error) => {
         console.error("Error during GET request:", error);
       });
   };
-
+  const backToGroups = async () => {
+    // navigation.navigate("ProfileTab");
+    await getGroups();
+  }
   useEffect(async () => {
     console.log("user", UserContext);
     await getGroups();
@@ -116,7 +123,7 @@ const GroupsScreen = ({ navigation }) => {
   return (
     <View style={styles.page}>
       <Text style={styles.title}>
-        You are included in {groups.length} Groups
+        {groups.length} Groups
       </Text>
       <View style={styles.container}>
         <FlatList
@@ -166,6 +173,16 @@ const GroupsScreen = ({ navigation }) => {
           )}
         />
       </View>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={backToGroups}
+      >
+        <MaterialIcons
+          name="refresh"
+          size={24}
+          color="black"
+        />
+      </TouchableOpacity>
       <TouchableOpacity style={styles.refreshButton} onPress={createGroup}>
         <Text style={styles.buttonText}>Create Group</Text>
       </TouchableOpacity>

@@ -43,7 +43,7 @@ const AddExpenseScreen = ({ route, navigation }) => {
         gid: UserContext.gid
       };
       const response = await fetch(
-        "http://localhost:3000/splitter/addexpense",
+        "https://expense-splitter-service.onrender.com/splitter/addexpense",
         {
           method: "POST",
           headers: {

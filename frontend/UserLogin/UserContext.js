@@ -3,6 +3,8 @@ var user = {
     userid: "abcd",
     paymentGraph: [],
     gid: "",
-    expenses:[]
+    expenses: [],
+    balance: 0,
+    groups: []
 };
 export default user;

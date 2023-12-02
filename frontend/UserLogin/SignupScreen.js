@@ -1,7 +1,7 @@
 // SignUpScreen.js
 
 import React, { useState } from "react";
-import { View, TextInput, Image, Button, StyleSheet, Text } from "react-native";
+import { View, TextInput, Image, Button, StyleSheet, Text, TouchableOpacity } from "react-native";
 // import Icon from "react-native-vector-icons/FontAwesome";
 // import bcrypt from "react-native-bcrypt";
 //import { useNavigation } from "@react-navigation/native";
@@ -56,17 +56,16 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>EquiSplit</Text>
+
       <Image
         source={require("../eqiSplit.png")} // Replace with the path to your image
         style={{
-          width: 100,
-          height: 100,
-          borderRadius: 40,
-          position: "absolute",
-          top: 45,
+          width: 90,
+          height: 90,
+          borderRadius: 40
         }} // Adjust width and height as needed
       />
+      <Text style={styles.header}>EquiSplit</Text>
       <TextInput
         style={styles.input}
         placeholder="Username"
@@ -86,7 +85,9 @@ const SignUpScreen = ({ navigation }) => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Sign Up" onPress={handleSignUp} />
+      <TouchableOpacity style={styles.refreshButton} onPress={handleSignUp}>
+        <Text >Sign UP</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -97,10 +98,9 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
     letterSpacing: 1,
-    position: "absolute",
-    fontSize: 30,
+    fontSize: 24,
     color: "white",
-    top: 150,
+    margin:20,
     fontWeight: "bold",
     justifyContent: "center",
   },
@@ -120,6 +120,20 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginBottom: 20,
     paddingHorizontal: 10,
+  },
+  refreshButton: {
+    backgroundColor: "turquoise",
+    margin: 10,
+    padding: 14,
+    borderRadius: 7,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 3.84,
+    elevation: 9,
   },
 });
 

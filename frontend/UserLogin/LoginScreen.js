@@ -1,7 +1,7 @@
 // LoginScreen.js
 
 import React, { useState } from "react";
-import { View, TextInput, Button, StyleSheet } from "react-native";
+import { View, TextInput, Button, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
 import UserContext from "../UserLogin/UserContext"
 // import { NavigationContainer } from "@react-navigation/native";
 // import HomeScreen from "../screens/homeScreen";
@@ -20,7 +20,7 @@ const LoginScreen = ({ navigation }) => {
             };
 
             // Send login request to backend
-            const response = await fetch("http://localhost:3000/splitter/login", {
+            const response = await fetch("https://expense-splitter-service.onrender.com/splitter/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -50,6 +50,16 @@ const LoginScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+
+            <Image
+                source={require("../eqiSplit.png")} // Replace with the path to your image
+                style={{
+                    width: 90,
+                    height: 90,
+                    borderRadius: 40
+                }} // Adjust width and height as needed
+            />
+            <Text style={styles.header}>EquiSplit</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Username"
@@ -63,23 +73,53 @@ const LoginScreen = ({ navigation }) => {
                 onChangeText={setPassword}
                 secureTextEntry
             />
-            <Button title="Login" onPress={handleLogin} />
+            <TouchableOpacity style={styles.refreshButton} onPress={handleLogin}>
+                <Text >Login</Text>
+            </TouchableOpacity>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    header: {
+        textShadowColor: "rgba(0, 0, 5, 0.3)",
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 2,
+        letterSpacing: 1,
+        fontSize: 24,
+        color: "white",
+        margin: 20,
+        fontWeight: "bold",
+        justifyContent: "center",
+    },
     container: {
+        backgroundColor: "hsla(111, 0%, 40%, 1)",
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
         padding: 20,
     },
+    refreshButton: {
+        backgroundColor: "turquoise",
+        margin: 10,
+        padding: 14,
+        borderRadius: 7,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.05,
+        shadowRadius: 3.84,
+        elevation: 9,
+    },
     input: {
+        borderRadius: 14,
         height: 40,
         width: "100%",
-        borderColor: "gray",
+        borderCurve: "circular",
         borderWidth: 1,
+        backgroundColor: "white",
         marginBottom: 20,
         paddingHorizontal: 10,
     },
