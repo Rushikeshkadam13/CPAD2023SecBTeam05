@@ -14,6 +14,8 @@ import {
 import GroupsScreen from "./groupsScreen";
 const { StatusBarManager } = NativeModules;
 import UserContext from '../UserLogin/UserContext';
+import { MaterialIcons } from "@expo/vector-icons";
+
 // const [loggedUser, setLoggedUser] = useState("");
 const avatarUrl = "https://avatars.dicebear.com/api/avataaars/example.svg";
 
@@ -45,8 +47,6 @@ const ProfileTab = ({ navigation }) => {
             {UserContext ? UserContext.userid : "Loading..."}
         </Text>
         </Text>
-
-
         <TouchableOpacity style={styles.logoutButton} onPress={logoutPressed}>
         <Icon name="sign-out" size={20} color="white" />
         <Text style={styles.logoutText}>Logout</Text>
@@ -66,17 +66,19 @@ const ProfileTab = ({ navigation }) => {
     </View>
   );
 };
-
 const FriendsTab = () => {
   const [users, setUsers] = useState(null);
   const api = "https://expense-splitter-service.onrender.com/splitter/getusers";
-  useEffect(() => {
+  const getUsers = () => {
     fetch(api)
       .then((response) => response.json())
       .then((data) => {
         setUsers(data);
       })
       .catch((error) => console.error("Error fetching users:", error));
+  }
+  useEffect(() => {
+    getUsers();
   }, []);
 
   const renderUser = ({ item }) => (
@@ -110,7 +112,9 @@ const FriendsTab = () => {
       <Text style={{
         color: "hsla(111, 0%, 65%, 1)"
       }}>Email: {item.uid}</Text>
+
     </View>
+
   );
 
   return (
@@ -134,6 +138,16 @@ const FriendsTab = () => {
         keyExtractor={(item) => item.uid} // Assuming 'uid' is a unique identifier
         />
       </View>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={getUsers}
+      >
+        <MaterialIcons
+          name="refresh"
+          size={24}
+          color="black"
+        />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -237,6 +251,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+
+  backButton: {
+    position: "absolute",
+    top: 10,
+    left: 15,
+    backgroundColor: "hsla(111, 0%, 65%, 1)",
+    padding: 10,
+    borderRadius: 7,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4.84,
+    elevation: 6,
   },
   page: {
     flex: 1,
