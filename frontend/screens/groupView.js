@@ -8,19 +8,19 @@ import {
   ScrollView,
   SafeAreaView,
   Platform,
-  NativeModules
+  NativeModules,
 } from "react-native";
 
 const { StatusBarManager } = NativeModules;
 import UserContext from "../UserLogin/UserContext";
 import { MaterialIcons } from "@expo/vector-icons";
-const GroupView = ({ route, navigation }) => { 
-
+import { Button } from "react-native-elements";
+const GroupView = ({ route, navigation }) => {
   const { trxnGraph, expenses, agid } = route.params;
 
   const backToGroups = () => {
     navigation.goBack();
-  }
+  };
 
   const addExpense = () => {
     navigation.navigate("AddExpenseScreen", {
@@ -29,67 +29,67 @@ const GroupView = ({ route, navigation }) => {
     });
   };
 
+  const settleTransaction = () => {
+    console.log("in settleTransaction");
+  };
+
   return (
     <SafeAreaView style={styles.page}>
       <View style={styles.container}>
-        <View style={styles.container} >
+        <View style={styles.container}>
           <FlatList
             data={trxnGraph}
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
               <View style={styles.groupContainer}>
                 <Text style={styles.groupTitle}>
-                  {item.from === UserContext.userid ? "You" : item.from} Will Pay {item.balance} Rs. to {item.to === UserContext.userid ? "You" : item.to}
+                  {item.from === UserContext.userid ? "You" : item.from} Will
+                  Pay {item.balance} Rs. to{" "}
+                  {item.to === UserContext.userid ? "You" : item.to}
                 </Text>
+                <TouchableOpacity
+                  style={styles.settleUpButton}
+                  onPress={settleTransaction}
+                >
+                  <Text style={styles.buttonTextSettelUp}>Settle Up</Text>
+                </TouchableOpacity>
               </View>
             )}
           />
-        </View >
+        </View>
 
-      <Text style={styles.title}>
-          Expenses in this group
-        </Text>
-      <View style={styles.container}>
-        <FlatList
+        <Text style={styles.title}>Expenses in this group</Text>
+        <View style={styles.container}>
+          <FlatList
             data={UserContext.expenses}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.groupContainer}>
-              <View >
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.groupContainer}>
                 <View>
-                  <Text style={styles.groupTitle}>{item.title}</Text>
+                  <View>
+                    <Text style={styles.groupTitle}>{item.title}</Text>
+                  </View>
+                  <View>
+                    <Text style={styles.groupDescription}>
+                      {item.uid === UserContext.userid ? "You" : item.uid} Paid{" "}
+                      {item.amount} Rs.
+                    </Text>
+                  </View>
                 </View>
-                <View >
-                  <Text style={styles.groupDescription}>
-                    {item.uid} Paid {item.amount} Rs.
-                  </Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={backToGroups}
-        >
-          <MaterialIcons
-            name="close"
-            size={24}
-            color="black"
+              </TouchableOpacity>
+            )}
           />
+        </View>
+        <TouchableOpacity style={styles.backButton} onPress={backToGroups}>
+          <MaterialIcons name="close" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.refreshButton}
-          onPress={addExpense}
-        >
+        <TouchableOpacity style={styles.refreshButton} onPress={addExpense}>
           <Text style={styles.buttonText}>Add Expense</Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
-
 
 const styles = StyleSheet.create({
   page: {
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   },
   horizontalSection: {
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   verticalSection: {
     flex: 1,
@@ -233,8 +233,8 @@ const styles = StyleSheet.create({
     marginBottom: "50",
   },
   settleUpButton: {
-    backgroundColor: "#00e64d",
-    padding: 8,
+    backgroundColor: "turquoise",
+    padding: 7,
     marginLeft: 2,
     borderRadius: 7,
     shadowColor: "#ffffff",
@@ -242,13 +242,10 @@ const styles = StyleSheet.create({
       width: 4,
       height: 4,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 4.84,
-    elevation: 6,
   },
-  settleUpText: {
-    color: "#ffffff",
-    fontWeight: "bold",
+  buttonTextSettelUp: {
+    color: "white",
+    fontSize: 13,
   },
 });
 
