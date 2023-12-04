@@ -6,7 +6,6 @@ const expenseModel = require("../models/Expense");
 const dbOperations = require("../expenseCalculations/databaseOperations");
 router.use(express.json());
 
-
 router.post("/adduser", async (req, res) => {
   const User = new userModel({
     username: req.body.username,
@@ -15,7 +14,7 @@ router.post("/adduser", async (req, res) => {
   });
   try {
     console.log("user");
-    console.log(User)
+    console.log(User);
     const user = await User.save();
     // console.log("asa                   ..........................................", user);
     res.json(user);
@@ -54,7 +53,7 @@ router.post("/creategroup", async (req, res) => {
 
 router.get("/getgroups", async (req, res) => {
   try {
-    console.log("Hi")
+    console.log("Hi");
     console.log(req.query);
     const groups = await dbOperations.getGroups(req.query.uid);
     res.json(groups);
@@ -67,23 +66,23 @@ router.post("/login", async (req, res) => {
   try {
     const result = {
       authenticated: true,
-      username: "username"
+      username: "username",
     };
     var userinp = req.body.username;
     var p = req.body.password;
-    console.log(userinp, p, "...........................")
-    var isUser = await userModel.findOne({ password: p, username: userinp })
-    console.log("is", isUser, await userModel.findOne({ username: userinp }))
+    console.log(userinp, p, "...........................");
+    var isUser = await userModel.findOne({ password: p, username: userinp });
+    console.log("is", isUser, await userModel.findOne({ username: userinp }));
     if (isUser) {
-      console.log(isUser)
-      result.username = isUser.username
+      console.log(isUser);
+      result.username = isUser.username;
       result.authenticated = true;
-      res.send(result)
+      res.send(result);
 
-      console.log("isUser", result)
+      console.log("isUser", result);
     } else {
       result.authenticated = false;
-      res.send(result)
+      res.send(result);
     }
     //
   } catch (err) {
@@ -105,19 +104,36 @@ router.post("/addexpense", async (req, res) => {
     title: req.body.title,
     description: req.body.description,
     amount: req.body.amount,
-    uid: req.body.uid
+    uid: req.body.uid,
   });
   try {
     const expense = await Expense.save();
     const expenseId = expense._id;
-    dbOperations.addExpenseToGroup(req.body.gid, expenseId, Expense.uid, Expense.amount);
+    dbOperations.addExpenseToGroup(
+      req.body.gid,
+      expenseId,
+      Expense.uid,
+      Expense.amount
+    );
     res.json(expense);
-
   } catch (err) {
     res.send("Error" + err);
   }
 });
 
-
+router.post("/settletransaction", async (req, res) => {
+  const transaction = {
+    sender: req.body.sender,
+    receiver: req.body.receiver,
+    amount: req.body.amount,
+    gid: req.body.gid,
+  };
+  try {
+    dbOperations.settleTransaction(transaction);
+    res.json("Success");
+  } catch (err) {
+    res.send("Error" + err);
+  }
+});
 
 module.exports = router;

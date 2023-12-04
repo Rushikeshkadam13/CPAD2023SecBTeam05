@@ -15,6 +15,9 @@ const { StatusBarManager } = NativeModules;
 import UserContext from "../UserLogin/UserContext";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
+import groupScreen from "./groupsScreen";
+import { getExpenses } from "../../backEnd/expenseCalculations/databaseOperations";
+// import { getGroups } from "../../backEnd/expenseCalculations/databaseOperations";
 const GroupView = ({ route, navigation }) => {
   const { trxnGraph, expenses, agid } = route.params;
 
@@ -29,8 +32,50 @@ const GroupView = ({ route, navigation }) => {
     });
   };
 
-  const settleTransaction = () => {
-    console.log("in settleTransaction");
+  const updateExpneses = async (gid) => {
+    await groupScreen.updateGroup(gid);
+  };
+  const refreshExpense = async (gid) => {
+    await getExpenses(gid);
+  };
+
+  const settleTransaction = async (sender, receiver, amount) => {
+    try {
+      console.log("in settleTransaction");
+      var formattedData = {
+        sender: sender.from,
+        receiver: sender.to,
+        amount: sender.amount,
+        gid: UserContext.gid,
+      };
+      console.log("formattedData:", formattedData);
+      const response = await fetch(
+        "https://expense-splitter-service.onrender.com/splitter/settletransaction",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formattedData),
+        }
+      );
+      updateExpneses(UserContext.gid);
+      console.log("settelup response:", response);
+      if (response.ok) {
+        console.log("Settled Up successfully!");
+        refreshExpense(UserContext.gid);
+        navigation.navigate("ViewGroupScreen", {
+          trxnGraph: UserContext.paymentGraph,
+          expenses: UserContext.expenses,
+          selectedGroup: UserContext.gid,
+        });
+      } else {
+        console.error("Failed to Settled Up", response.status);
+        navigation.navigate("ViewGroupScreen");
+      }
+    } catch (error) {
+      console.error("Error saving expense data:", error.message);
+    }
   };
 
   return (
@@ -47,12 +92,20 @@ const GroupView = ({ route, navigation }) => {
                   Pay {item.balance} Rs. to{" "}
                   {item.to === UserContext.userid ? "You" : item.to}
                 </Text>
-                <TouchableOpacity
-                  style={styles.settleUpButton}
-                  onPress={settleTransaction}
-                >
-                  <Text style={styles.buttonTextSettelUp}>Settle Up</Text>
-                </TouchableOpacity>
+                {item.from === UserContext.userid && (
+                  <TouchableOpacity
+                    style={styles.settleUpButton}
+                    onPress={() =>
+                      settleTransaction({
+                        from: item.from,
+                        to: item.to,
+                        amount: item.balance,
+                      })
+                    }
+                  >
+                    <Text style={styles.buttonTextSettelUp}>Settle Up</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             )}
           />
@@ -83,8 +136,11 @@ const GroupView = ({ route, navigation }) => {
         <TouchableOpacity style={styles.backButton} onPress={backToGroups}>
           <MaterialIcons name="close" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.refreshButton} onPress={addExpense}>
+        <TouchableOpacity style={styles.addExpenseButton} onPress={addExpense}>
           <Text style={styles.buttonText}>Add Expense</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.refreshButton} onPress={refreshExpense}>
+          <MaterialIcons name="refresh" size={24} color="black" />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -179,22 +235,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingBottom: 10,
   },
-  addExpenseButton: {
-    position: "absolute",
-    bottom: 120,
-    right: 0,
-    backgroundColor: "hsla(111, 0%, 65%, 1)",
-    padding: 10,
-    borderRadius: 7,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 2,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 4.84,
-    elevation: 6,
-  },
   backButton: {
     position: "absolute",
     top: 10,
@@ -212,6 +252,22 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   refreshButton: {
+    position: "absolute",
+    bottom: 20,
+    left: 5,
+    backgroundColor: "hsla(111, 0%, 65%, 1)",
+    padding: 10,
+    borderRadius: 40,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4.84,
+    elevation: 6,
+  },
+  addExpenseButton: {
     position: "absolute",
     bottom: 15,
     right: 15,
@@ -235,6 +291,7 @@ const styles = StyleSheet.create({
   settleUpButton: {
     backgroundColor: "turquoise",
     padding: 7,
+    marginTop: 5,
     marginLeft: 2,
     borderRadius: 7,
     shadowColor: "#ffffff",
@@ -244,7 +301,7 @@ const styles = StyleSheet.create({
     },
   },
   buttonTextSettelUp: {
-    color: "white",
+    color: "black",
     fontSize: 13,
   },
 });

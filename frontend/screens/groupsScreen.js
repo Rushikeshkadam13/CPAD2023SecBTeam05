@@ -114,17 +114,15 @@ const GroupsScreen = ({ navigation }) => {
   const backToGroups = async () => {
     // navigation.navigate("ProfileTab");
     await getGroups();
-  }
-  useEffect(async () => {
+  };
+  useEffect(() => {
     console.log("user", UserContext);
-    await getGroups();
+    getGroups();
   }, []);
 
   return (
     <View style={styles.page}>
-      <Text style={styles.title}>
-        {groups.length} Groups
-      </Text>
+      <Text style={styles.title}>{groups.length} Groups</Text>
       <View style={styles.container}>
         <FlatList
           data={groups}
@@ -173,15 +171,8 @@ const GroupsScreen = ({ navigation }) => {
           )}
         />
       </View>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={backToGroups}
-      >
-        <MaterialIcons
-          name="refresh"
-          size={24}
-          color="black"
-        />
+      <TouchableOpacity style={styles.backButton} onPress={backToGroups}>
+        <MaterialIcons name="refresh" size={24} color="black" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.refreshButton} onPress={createGroup}>
         <Text style={styles.buttonText}>Create Group</Text>
@@ -293,11 +284,11 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 10,
-    left: 15,
+    bottom: 20,
+    left: 5,
     backgroundColor: "hsla(111, 0%, 65%, 1)",
     padding: 10,
-    borderRadius: 7,
+    borderRadius: 40,
     shadowColor: "#000",
     shadowOffset: {
       width: 2,
